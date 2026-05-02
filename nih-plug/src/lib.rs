@@ -1,6 +1,6 @@
 use nih_plug::prelude::*;
 use std::sync::Arc;
-use thorgend_dsp::{Gendy1, MAX_NUM_CPS};
+use thorgend_dsp::{Notes, Voices, MAX_NUM_CPS};
 
 #[derive(Params)]
 pub struct Gendy1Params {
@@ -119,7 +119,8 @@ impl Default for Gendy1Params {
 pub struct Thorgend {
   params: Arc<Gendy1Params>,
   sample_rate: f32,
-  gendy1: Gendy1,
+  voices: Voices,
+  notes: Notes,
 }
 
 impl Default for Thorgend {
@@ -127,7 +128,34 @@ impl Default for Thorgend {
     Self {
       params: Arc::new(Gendy1Params::default()),
       sample_rate: 44100.0,
-      gendy1: Gendy1::new(44100.0),
+      voices: Voices::new(44100.0),
+      notes: Notes::new(),
+    }
+  }
+}
+
+impl Thorgend {
+  fn process_midi_events(&mut self, context: &mut impl ProcessContext<Self>) {
+    // while is needed because events come in batches
+    while let Some(event) = context.next_event() {
+      match event {
+        NoteEvent::NoteOn { note, velocity, .. } => {
+          self.notes.note_on(note, velocity);
+        }
+        NoteEvent::NoteOff { note, .. } => {
+          self.notes.note_off(note);
+        }
+        NoteEvent::MidiCC { cc, value, .. } => match cc {
+          64 => self.notes.sustain(value > 0.),
+          120 => self.notes.remove_notes(),
+          123 => self.notes.release_notes(),
+          _ => (),
+        },
+        NoteEvent::MidiPitchBend { value, .. } => {
+          todo!("Implement pitch bend");
+        }
+        _ => (),
+      }
     }
   }
 }
@@ -162,19 +190,23 @@ impl Plugin for Thorgend {
     _context: &mut impl InitContext<Self>,
   ) -> bool {
     self.sample_rate = buffer_config.sample_rate;
+    self.voices = Voices::new(buffer_config.sample_rate);
+
     true
   }
 
   fn reset(&mut self) {
-    self.gendy1.reset();
+    self.voices.reset();
   }
 
   fn process(
     &mut self,
     buffer: &mut Buffer,
     _aux: &mut AuxiliaryBuffers,
-    _context: &mut impl ProcessContext<Self>,
+    context: &mut impl ProcessContext<Self>,
   ) -> ProcessStatus {
+    self.process_midi_events(context);
+
     for channel_samples in buffer.iter_samples() {
       let gain = self.params.gain.smoothed.next();
       let amp_dist = self.params.amp_dist.value();
@@ -187,12 +219,22 @@ impl Plugin for Thorgend {
       let scale_dur = self.params.scale_dur.value();
       let num_cps = self.params.num_cps.value() as usize;
 
-      let gendy1_out = self.gendy1.process(
-        gain, amp_dist, dur_dist, a_amp, a_dur, min_freq, max_freq, scale_amp, scale_dur, num_cps,
+      let voices_out = self.voices.process(
+        gain,
+        amp_dist,
+        dur_dist,
+        a_amp,
+        a_dur,
+        min_freq,
+        max_freq,
+        scale_amp,
+        scale_dur,
+        num_cps,
+        self.notes.get_notes(),
       );
 
       for sample in channel_samples {
-        *sample = gendy1_out;
+        *sample = voices_out;
       }
     }
 

@@ -1,7 +1,7 @@
 [package]
-name = "dm_time_warp"
+name = "thorgend"
 version = "0.1.0"
-authors = ["Dave Mollen <davemollen@gmail.com>"]
+authors = ["Stan Verberkt <verberktstan@gmail.com>", "davemollen <davemollen@gmail.com>"]
 edition = "2021"
 
 [lib]
