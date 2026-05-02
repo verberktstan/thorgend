@@ -173,7 +173,7 @@ impl Plugin for Thorgend {
     ..AudioIOLayout::const_default()
   }];
 
-  const MIDI_INPUT: MidiConfig = MidiConfig::None;
+  const MIDI_INPUT: MidiConfig = MidiConfig::Basic;
   const SAMPLE_ACCURATE_AUTOMATION: bool = true;
 
   type BackgroundTask = ();
@@ -247,12 +247,12 @@ impl ClapPlugin for Thorgend {
   const CLAP_DESCRIPTION: Option<&'static str> = Some("GENDYN stochastic synthesis");
   const CLAP_MANUAL_URL: Option<&'static str> = None;
   const CLAP_SUPPORT_URL: Option<&'static str> = None;
-  const CLAP_FEATURES: &'static [ClapFeature] = &[ClapFeature::Instrument, ClapFeature::Stereo];
+  const CLAP_FEATURES: &'static [ClapFeature] = &[ClapFeature::Instrument];
 }
 
 impl Vst3Plugin for Thorgend {
   const VST3_CLASS_ID: [u8; 16] = *b"dm-Thorgend.....";
-  const VST3_SUBCATEGORIES: &'static [Vst3SubCategory] = &[Vst3SubCategory::Fx];
+  const VST3_SUBCATEGORIES: &'static [Vst3SubCategory] = &[Vst3SubCategory::Instrument];
 }
 
 nih_export_clap!(Thorgend);
