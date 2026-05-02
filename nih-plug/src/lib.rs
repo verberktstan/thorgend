@@ -40,8 +40,11 @@ pub struct Gendy1Params {
   #[id = "numcps"]
   pub num_cps: IntParam,
 
-  #[id = "gain"]
-  pub gain: FloatParam,
+  #[id = "voices"]
+  pub voices: IntParam,
+
+  #[id = "output_gain"]
+  pub output_gain: FloatParam,
 }
 
 impl Default for Gendy1Params {
@@ -99,8 +102,9 @@ impl Default for Gendy1Params {
           max: MAX_NUM_CPS as i32,
         },
       ),
-      gain: FloatParam::new(
-        "Gain",
+      voices: IntParam::new("Voices", 1, IntRange::Linear { min: 1, max: 16 }),
+      output_gain: FloatParam::new(
+        "Output Gain",
         util::db_to_gain(-6.0),
         FloatRange::Skewed {
           min: util::db_to_gain(-60.0),
@@ -205,22 +209,24 @@ impl Plugin for Thorgend {
     _aux: &mut AuxiliaryBuffers,
     context: &mut impl ProcessContext<Self>,
   ) -> ProcessStatus {
+    let amp_dist = self.params.amp_dist.value();
+    let dur_dist = self.params.dur_dist.value();
+    let a_amp = self.params.a_amp.value();
+    let a_dur = self.params.a_dur.value();
+    let min_freq = self.params.min_freq.value();
+    let max_freq = self.params.max_freq.value();
+    let scale_amp = self.params.scale_amp.value();
+    let scale_dur = self.params.scale_dur.value();
+    let num_cps = self.params.num_cps.value() as usize;
+    self
+      .notes
+      .set_voice_count(self.params.voices.value() as usize);
+
     self.process_midi_events(context);
 
     for channel_samples in buffer.iter_samples() {
-      let gain = self.params.gain.smoothed.next();
-      let amp_dist = self.params.amp_dist.value();
-      let dur_dist = self.params.dur_dist.value();
-      let a_amp = self.params.a_amp.value();
-      let a_dur = self.params.a_dur.value();
-      let min_freq = self.params.min_freq.value();
-      let max_freq = self.params.max_freq.value();
-      let scale_amp = self.params.scale_amp.value();
-      let scale_dur = self.params.scale_dur.value();
-      let num_cps = self.params.num_cps.value() as usize;
-
+      let output_gain = self.params.output_gain.smoothed.next();
       let voices_out = self.voices.process(
-        gain,
         amp_dist,
         dur_dist,
         a_amp,
@@ -231,7 +237,7 @@ impl Plugin for Thorgend {
         scale_dur,
         num_cps,
         self.notes.get_notes(),
-      );
+      ) * output_gain;
 
       for sample in channel_samples {
         *sample = voices_out;

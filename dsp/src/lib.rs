@@ -41,7 +41,6 @@ impl Voices {
 
   pub fn process(
     &mut self,
-    gain: f32,
     amp_dist: i32,
     dur_dist: i32,
     a_amp: f32,
@@ -67,7 +66,6 @@ impl Voices {
       let freq = Self::midi_to_hz(note.get_note());
       let envelope = adsr.process(note, ADSR_ATTACK, ADSR_DECAY, ADSR_SUSTAIN, ADSR_RELEASE);
       let output = oscillator.process(
-        gain,
         amp_dist,
         dur_dist,
         a_amp,

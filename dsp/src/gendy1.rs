@@ -158,7 +158,6 @@ impl Gendy1 {
 
   pub fn process(
     &mut self,
-    gain: f32,
     amp_dist: i32,
     dur_dist: i32,
     a_amp: f32,
@@ -196,8 +195,7 @@ impl Gendy1 {
         * num as f64;
     }
 
-    let z =
-      ((1.0 - self.phase) * self.amp as f64 + self.phase * self.next_amp as f64) as f32 * gain;
+    let z = ((1.0 - self.phase) * self.amp as f64 + self.phase * self.next_amp as f64) as f32;
     self.phase += self.speed;
 
     z
