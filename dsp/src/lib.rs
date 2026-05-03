@@ -13,8 +13,7 @@ use crate::{
 
 pub const MAX_NUM_CPS: usize = 12;
 const MAX_VOICE_COUNT: usize = 8;
-const A4: f32 = 440.;
-const ADSR_RETRIGGER_TIME: f32 = 5.;
+const ADSR_RETRIGGER_TIME_IN_MS: f32 = 2.;
 
 pub struct Voices {
   oscillator: Vec<Gendy1>,
@@ -25,7 +24,7 @@ impl Voices {
   pub fn new(sample_rate: f32) -> Self {
     Self {
       oscillator: vec![Gendy1::new(sample_rate); MAX_VOICE_COUNT],
-      adsr: vec![ADSR::new(sample_rate, ADSR_RETRIGGER_TIME); MAX_VOICE_COUNT],
+      adsr: vec![ADSR::new(sample_rate, ADSR_RETRIGGER_TIME_IN_MS); MAX_VOICE_COUNT],
     }
   }
 
@@ -60,9 +59,8 @@ impl Voices {
       if *note.get_adsr_stage() == ADSRStage::Idle {
         continue;
       }
-
-      let freq = Self::midi_to_hz(note.get_note());
       let envelope = adsr.process(note, attack, decay, sustain, release);
+      let freq = adsr.get_freq();
       let output = oscillator.process(
         amp_dist,
         dur_dist,
@@ -79,9 +77,5 @@ impl Voices {
     }
 
     sum
-  }
-
-  fn midi_to_hz(note: u8) -> f32 {
-    A4 * 2_f32.powf((note as f32 - 69.) / 12.)
   }
 }

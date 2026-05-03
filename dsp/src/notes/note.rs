@@ -1,5 +1,7 @@
 use std::array;
 
+const A4: f32 = 440.;
+
 #[derive(PartialEq, Clone)]
 pub enum ADSRStage {
   Attack,
@@ -13,28 +15,23 @@ pub enum ADSRStage {
 #[derive(Clone)]
 pub struct Note {
   note: u8,
-  speed: f32,
   gain: f32,
   adsr_stage: ADSRStage,
-  note_to_speed_table: [f32; 128],
+  midi_note_to_hz: [f32; 128],
 }
 
 impl Note {
   pub fn default() -> Self {
     Self {
       note: 0,
-      speed: 0.,
       gain: 0.,
       adsr_stage: ADSRStage::Idle,
-      note_to_speed_table: array::from_fn(|note| {
-        2_f32.powf((note as f32 - 60.).clamp(-48., 48.) / 12.)
-      }),
+      midi_note_to_hz: array::from_fn(|note| A4 * 2_f32.powf((note as f32 - 69.) / 12.)),
     }
   }
 
   pub fn note_on(&mut self, note: u8, velocity: f32) {
     self.note = note;
-    self.speed = self.note_to_speed_table[note as usize];
     self.gain = velocity.sqrt();
     self.adsr_stage = ADSRStage::Attack;
   }
@@ -45,7 +42,6 @@ impl Note {
 
   pub fn steal_note(&mut self, note: u8, velocity: f32) {
     self.note = note;
-    self.speed = self.note_to_speed_table[note as usize];
     self.gain = velocity;
     self.adsr_stage = match self.adsr_stage {
       ADSRStage::Idle => ADSRStage::Attack,
@@ -55,7 +51,6 @@ impl Note {
 
   pub fn reset_note(&mut self) {
     self.note = 0;
-    self.speed = 0.;
     self.gain = 0.;
     self.adsr_stage = ADSRStage::Idle;
   }
@@ -68,8 +63,8 @@ impl Note {
     self.note
   }
 
-  pub fn get_speed(&self) -> f32 {
-    self.speed
+  pub fn get_freq(&self) -> f32 {
+    self.midi_note_to_hz[self.get_note() as usize]
   }
 
   pub fn get_gain(&self) -> f32 {
