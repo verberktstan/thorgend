@@ -1,6 +1,6 @@
 ## Thorgend
 
-An instrument using the dynamic stochastic approach to waveform synthesis conceived by Iannis Xenakis.
+An instrument plugin using the dynamic stochastic approach to waveform synthesis conceived by Iannis Xenakis.
 
 The effect can be compiled to VST3, CLAP or AUv2.
 
