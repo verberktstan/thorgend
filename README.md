@@ -1,33 +1,19 @@
-## dm-TimeWarp
+## Thorgend
 
-<img src="screenshot.png" alt="plugin screenshot" style="display:block;width:75%;max-width:1056px;">
+An instrument using the dynamic stochastic approach to waveform synthesis conceived by Iannis Xenakis.
 
-A granular audio effect written in Rust.
-It's a granular delay, looper & sampler with time stretch capabilities wrapped into one plugin. You can morph from regular playback into the granular universe.
-
-The effect can be compiled to a [MOD audio](https://mod.audio/), VST3, CLAP, AUv2 or LV2 plugin.
+The effect can be compiled to VST3, CLAP or AUv2.
 
 ## Table of contents:
 
-- [VST3, CLAP, AUv2 & LV2 installation](#VST3-CLAP-AUv2-&-LV2-installation)
-- [MOD installation](#MOD-installation)
+- [VST3, CLAP & AUv2](#VST3-CLAP-&-AUv2-installation)
 - [Copyright notices](#Copyright-notices)
 
-## VST3, CLAP, AUv2 & LV2 installation
+## VST3, CLAP & AUv2 installation
 
-You can download the VST3, CLAP, AUv2 & LV2 plugins from the [releases page](https://github.com/davemollen/dm-TimeWarp/releases).
-
-The LV2 plugin doesn't have a GUI unless you run the plugin in MOD Desktop.
+You can download the VST3, CLAP & AUv2 plugins from the [releases page](https://github.com/verberktstan/Thorgend/releases).
 
 On macOS you may need to [disable Gatekeeper](https://disable-gatekeeper.github.io/) as Apple has recently made it more difficult to run unsigned code on macOS.
-
-## MOD installation
-
-Install the plugin from the MOD Audio plugin store.
-
-The latest MOD builds can also be found on the [releases page](https://github.com/davemollen/dm-TimeWarp/releases).
-
-If you want to build the plugin on your own machine check out the [mod-plugin-builder repository](https://github.com/moddevices/mod-plugin-builder) for instructions.
 
 ## Copyright notices
 
