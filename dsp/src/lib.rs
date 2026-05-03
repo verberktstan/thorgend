@@ -14,11 +14,7 @@ use crate::{
 pub const MAX_NUM_CPS: usize = 12;
 const MAX_VOICE_COUNT: usize = 8;
 const A4: f32 = 440.;
-const ADSR_ATTACK: f32 = 10.;
-const ADSR_DECAY: f32 = 200.;
-const ADSR_SUSTAIN: f32 = 0.5;
-const ADSR_RELEASE: f32 = 1000.;
-const ADSR_RETRIGGER_TIME: f32 = 0.;
+const ADSR_RETRIGGER_TIME: f32 = 5.;
 
 pub struct Voices {
   oscillator: Vec<Gendy1>,
@@ -45,11 +41,13 @@ impl Voices {
     dur_dist: i32,
     a_amp: f32,
     a_dur: f32,
-    min_freq: f32,
-    max_freq: f32,
     scale_amp: f32,
     scale_dur: f32,
     num_cps: usize,
+    attack: f32,
+    decay: f32,
+    sustain: f32,
+    release: f32,
     notes: &mut Vec<Note>,
   ) -> f32 {
     let mut sum = 0.;
@@ -64,14 +62,14 @@ impl Voices {
       }
 
       let freq = Self::midi_to_hz(note.get_note());
-      let envelope = adsr.process(note, ADSR_ATTACK, ADSR_DECAY, ADSR_SUSTAIN, ADSR_RELEASE);
+      let envelope = adsr.process(note, attack, decay, sustain, release);
       let output = oscillator.process(
         amp_dist,
         dur_dist,
         a_amp,
         a_dur,
         freq,
-        freq * 2.,
+        freq * 2., // TODO: add something like a bandwidth param
         scale_amp,
         scale_dur,
         num_cps,

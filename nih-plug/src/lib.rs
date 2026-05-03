@@ -1,127 +1,11 @@
+mod thorgend_params;
 use nih_plug::prelude::*;
 use std::sync::Arc;
-use thorgend_dsp::{Notes, Voices, MAX_NUM_CPS};
-
-#[derive(Params)]
-pub struct Gendy1Params {
-  /// Probability distribution for amplitude random walk (0=linear, 1=Cauchy, 2=logistic, 3=hyperbcos, 4=arcsine, 5=expon, 6=sinus)
-  #[id = "ampdist"]
-  pub amp_dist: IntParam,
-
-  /// Probability distribution for duration random walk
-  #[id = "durdist"]
-  pub dur_dist: IntParam,
-
-  /// Shape parameter for amplitude distribution [0.0001, 1.0]
-  #[id = "aparam"]
-  pub a_amp: FloatParam,
-
-  /// Shape parameter for duration distribution [0.0001, 1.0]
-  #[id = "dparam"]
-  pub a_dur: FloatParam,
-
-  /// Minimum output frequency in Hz
-  #[id = "minfreq"]
-  pub min_freq: FloatParam,
-
-  /// Maximum output frequency in Hz
-  #[id = "maxfreq"]
-  pub max_freq: FloatParam,
-
-  /// Scale factor for amplitude step size
-  #[id = "ampscale"]
-  pub scale_amp: FloatParam,
-
-  /// Scale factor for duration step size
-  #[id = "durscale"]
-  pub scale_dur: FloatParam,
-
-  /// Number of active control points (breakpoints per cycle)
-  #[id = "numcps"]
-  pub num_cps: IntParam,
-
-  #[id = "voices"]
-  pub voices: IntParam,
-
-  #[id = "output_gain"]
-  pub output_gain: FloatParam,
-}
-
-impl Default for Gendy1Params {
-  fn default() -> Self {
-    Self {
-      amp_dist: IntParam::new("Amp Distribution", 1, IntRange::Linear { min: 0, max: 6 }),
-      dur_dist: IntParam::new("Dur Distribution", 1, IntRange::Linear { min: 0, max: 6 }),
-      a_amp: FloatParam::new(
-        "Amp Param",
-        1.0,
-        FloatRange::Linear {
-          min: 0.0001,
-          max: 1.0,
-        },
-      ),
-      a_dur: FloatParam::new(
-        "Dur Param",
-        1.0,
-        FloatRange::Linear {
-          min: 0.0001,
-          max: 1.0,
-        },
-      ),
-      min_freq: FloatParam::new(
-        "Min Freq",
-        440.0,
-        FloatRange::Skewed {
-          min: 20.0,
-          max: 20000.0,
-          factor: FloatRange::skew_factor(-2.0),
-        },
-      )
-      .with_unit(" Hz")
-      .with_value_to_string(formatters::v2s_f32_hz_then_khz(2))
-      .with_string_to_value(formatters::s2v_f32_hz_then_khz()),
-      max_freq: FloatParam::new(
-        "Max Freq",
-        660.0,
-        FloatRange::Skewed {
-          min: 20.0,
-          max: 20000.0,
-          factor: FloatRange::skew_factor(-2.0),
-        },
-      )
-      .with_unit(" Hz")
-      .with_value_to_string(formatters::v2s_f32_hz_then_khz(2))
-      .with_string_to_value(formatters::s2v_f32_hz_then_khz()),
-      scale_amp: FloatParam::new("Amp Scale", 0.5, FloatRange::Linear { min: 0.0, max: 1.0 }),
-      scale_dur: FloatParam::new("Dur Scale", 0.5, FloatRange::Linear { min: 0.0, max: 1.0 }),
-      num_cps: IntParam::new(
-        "Num Control Points",
-        MAX_NUM_CPS as i32,
-        IntRange::Linear {
-          min: 1,
-          max: MAX_NUM_CPS as i32,
-        },
-      ),
-      voices: IntParam::new("Voices", 1, IntRange::Linear { min: 1, max: 16 }),
-      output_gain: FloatParam::new(
-        "Output Gain",
-        util::db_to_gain(-6.0),
-        FloatRange::Skewed {
-          min: util::db_to_gain(-60.0),
-          max: util::db_to_gain(0.0),
-          factor: FloatRange::gain_skew_factor(-60.0, 0.0),
-        },
-      )
-      .with_smoother(SmoothingStyle::Logarithmic(50.0))
-      .with_unit(" dB")
-      .with_value_to_string(formatters::v2s_f32_gain_to_db(2))
-      .with_string_to_value(formatters::s2v_f32_gain_to_db()),
-    }
-  }
-}
+use thorgend_dsp::{Notes, Voices};
+use thorgend_params::ThorgendParams;
 
 pub struct Thorgend {
-  params: Arc<Gendy1Params>,
+  params: Arc<ThorgendParams>,
   sample_rate: f32,
   voices: Voices,
   notes: Notes,
@@ -130,7 +14,7 @@ pub struct Thorgend {
 impl Default for Thorgend {
   fn default() -> Self {
     Self {
-      params: Arc::new(Gendy1Params::default()),
+      params: Arc::new(ThorgendParams::default()),
       sample_rate: 44100.0,
       voices: Voices::new(44100.0),
       notes: Notes::new(),
@@ -213,11 +97,12 @@ impl Plugin for Thorgend {
     let dur_dist = self.params.dur_dist.value();
     let a_amp = self.params.a_amp.value();
     let a_dur = self.params.a_dur.value();
-    let min_freq = self.params.min_freq.value();
-    let max_freq = self.params.max_freq.value();
     let scale_amp = self.params.scale_amp.value();
     let scale_dur = self.params.scale_dur.value();
     let num_cps = self.params.num_cps.value() as usize;
+    let attack = self.params.attack.value();
+    let decay = self.params.decay.value();
+    let release = self.params.release.value();
     self
       .notes
       .set_voice_count(self.params.voices.value() as usize);
@@ -225,17 +110,21 @@ impl Plugin for Thorgend {
     self.process_midi_events(context);
 
     for channel_samples in buffer.iter_samples() {
+      let sustain = self.params.sustain.smoothed.next();
       let output_gain = self.params.output_gain.smoothed.next();
+
       let voices_out = self.voices.process(
         amp_dist,
         dur_dist,
         a_amp,
         a_dur,
-        min_freq,
-        max_freq,
         scale_amp,
         scale_dur,
         num_cps,
+        attack,
+        decay,
+        sustain,
+        release,
         self.notes.get_notes(),
       ) * output_gain;
 
