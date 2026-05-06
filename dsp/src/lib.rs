@@ -1,6 +1,8 @@
 mod gendy1;
 mod linear_adsr;
 mod notes;
+mod lfo;
+pub use lfo::Lfo;
 mod shared {
   pub mod float_ext;
 }
