@@ -1,7 +1,7 @@
 mod thorgend_params;
 use nih_plug::prelude::*;
 use std::sync::Arc;
-use thorgend_dsp::{Notes, Voices};
+use thorgend_dsp::{Lfo, Notes, Voices};
 use thorgend_params::ThorgendParams;
 
 pub struct Thorgend {
@@ -9,6 +9,7 @@ pub struct Thorgend {
   sample_rate: f32,
   voices: Voices,
   notes: Notes,
+  lfo: Lfo,
 }
 
 impl Default for Thorgend {
@@ -18,6 +19,7 @@ impl Default for Thorgend {
       sample_rate: 44100.0,
       voices: Voices::new(44100.0),
       notes: Notes::new(),
+      lfo: Lfo::new(44100.0),
     }
   }
 }
@@ -79,6 +81,7 @@ impl Plugin for Thorgend {
   ) -> bool {
     self.sample_rate = buffer_config.sample_rate;
     self.voices = Voices::new(buffer_config.sample_rate);
+    self.lfo = Lfo::new(buffer_config.sample_rate);
 
     true
   }
@@ -99,7 +102,7 @@ impl Plugin for Thorgend {
     let a_dur = self.params.a_dur.value();
     let scale_amp = self.params.scale_amp.value();
     let scale_dur = self.params.scale_dur.value();
-    let num_cps = self.params.num_cps.value() as usize;
+    let lfo_rate = self.params.lfo_rate.value();
     let attack = self.params.attack.value();
     let decay = self.params.decay.value();
     let release = self.params.release.value();
@@ -113,6 +116,7 @@ impl Plugin for Thorgend {
       let sustain = self.params.sustain.smoothed.next();
       let output_gain = self.params.output_gain.smoothed.next();
 
+      let num_cps = (self.lfo.process(lfo_rate) + 1.0) / 2.0;
       let voices_out = self.voices.process(
         amp_dist,
         dur_dist,
