@@ -44,7 +44,7 @@ impl Voices {
     a_dur: f32,
     scale_amp: f32,
     scale_dur: f32,
-    num_cps: usize,
+    num_cps: f32,
     attack: f32,
     decay: f32,
     sustain: f32,

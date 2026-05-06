@@ -104,7 +104,7 @@ trait Gendy {
     max_freq: f32,
     scale_amp: f32,
     scale_dur: f32,
-    num_cps: usize,
+    num_cps: f32,
   ) -> f32;
 }
 
@@ -166,15 +166,9 @@ impl Gendy1 {
     max_freq: f32,
     scale_amp: f32,
     scale_dur: f32,
-    num_cps: usize,
+    num_cps: f32,
   ) -> f32 {
-    let num = {
-      if num_cps >= 1 && num_cps <= MAX_NUM_CPS {
-        num_cps
-      } else {
-        MAX_NUM_CPS
-      }
-    };
+    let num = (1.0 + num_cps * 11.0).round().clamp(1.0, 12.0) as usize;
 
     if self.phase >= 1.0 {
       self.phase -= 1.0;
