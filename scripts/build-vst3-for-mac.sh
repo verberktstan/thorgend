@@ -5,6 +5,8 @@ move_to="/Library/Audio/Plug-Ins/VST3/Thorgend.vst3"
 cd nih-plug
 cargo xtask bundle $package_name --release
 
+mkdir -p "$(dirname "$move_to")"
+
 if [ -d "$move_to" ]; then
     rm -r "$move_to"
 fi
