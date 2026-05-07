@@ -32,11 +32,11 @@ pub struct ThorgendParams {
   #[id = "lfo_rate"]
   pub lfo_rate: FloatParam,
 
-  // TODO(step A): add mod_index: FloatParam, range 0.0..=1.0, default 0.5
+  // TODO(step A): add lfo_mul: FloatParam, range 0.0..=1.0, default 0.5
   //   Controls the amplitude of the LFO — at 0 the LFO has no effect,
   //   at 1 it swings ±1.0 around the bias before clamping.
 
-  // TODO(step A): add mod_bias: FloatParam, range 0.0..=1.0, default 0.5
+  // TODO(step A): add lfo_add: FloatParam, range 0.0..=1.0, default 0.0
   //   The static center value added to the scaled LFO output.
   //   0.0 maps to 1 control point, 1.0 maps to 12.
 
@@ -88,8 +88,8 @@ impl Default for ThorgendParams {
 
       scale_dur: FloatParam::new("Dur Scale", 0.5, FloatRange::Linear { min: 0.0, max: 1.0 }),
 
-      // TODO(step A): initialize mod_index FloatParam here (Linear range 0.0..=1.0, default 0.5)
-      // TODO(step A): initialize mod_bias FloatParam here (Linear range 0.0..=1.0, default 0.5)
+      // TODO(step A): initialize lfo_mul FloatParam here (Linear range 0.0..=1.0, default 0.5)
+      // TODO(step A): initialize lfo_add FloatParam here (Linear range 0.0..=1.0, default 0.0)
       lfo_rate: FloatParam::new(
         "LFO Rate",
         0.5,

@@ -103,8 +103,8 @@ impl Plugin for Thorgend {
     let scale_amp = self.params.scale_amp.value();
     let scale_dur = self.params.scale_dur.value();
     let lfo_rate = self.params.lfo_rate.value();
-    // TODO(step B): let mod_index = self.params.mod_index.value();
-    // TODO(step B): let mod_bias = self.params.mod_bias.value();
+    // TODO(step B): let lfo_mul = self.params.lfo_mul.value();
+    // TODO(step B): let lfo_add = self.params.lfo_add.value();
     let attack = self.params.attack.value();
     let decay = self.params.decay.value();
     let release = self.params.release.value();
