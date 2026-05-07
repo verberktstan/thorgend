@@ -1,7 +1,7 @@
 mod thorgend_params;
 use nih_plug::prelude::*;
 use std::sync::Arc;
-use thorgend_dsp::{Lfo, Notes, Voices};
+use thorgend_dsp::{FloatExt, Lfo, Notes, Voices};
 use thorgend_params::ThorgendParams;
 
 pub struct Thorgend {
@@ -121,7 +121,7 @@ impl Plugin for Thorgend {
       // TODO(step B): replace formula below with:
       //   let lfo_out = self.lfo.process(lfo_rate);
       //   let num_cps = (mod_bias + lfo_out * mod_index).clamp(0.0, 1.0);
-      let num_cps = (self.lfo.process(lfo_rate) + 1.0) / 2.0;
+      let num_cps = self.lfo.process(lfo_rate).map_range(-1.0, 1.0, 0.0, 1.0);
       let voices_out = self.voices.process(
         amp_dist,
         dur_dist,

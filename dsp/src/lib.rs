@@ -3,6 +3,7 @@ mod linear_adsr;
 mod notes;
 mod lfo;
 pub use lfo::Lfo;
+pub use shared::float_ext::FloatExt;
 mod shared {
   pub mod float_ext;
 }
