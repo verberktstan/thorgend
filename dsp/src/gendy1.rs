@@ -1,5 +1,3 @@
-use crate::shared::float_ext::FloatExt;
-
 pub const MAX_NUM_CPS: usize = 12;
 
 // Probability distributions ported from Gendyn_distribution() in GendynUGens.cpp
@@ -168,9 +166,9 @@ impl Gendy1 {
     max_freq: f32,
     scale_amp: f32,
     scale_dur: f32,
-    num_cps: f32,
+    num_cps: usize,
   ) -> f32 {
-    let num = num_cps.map_range(0.0, 1.0, 1.0, 12.0).clamp(1.0, 12.0) as usize; // TODO: Reconsider num_cps range to extend to 1..24?
+      let num = num_cps.clamp(1, MAX_NUM_CPS); // TODO: Reconsider num_cps range to extend to 1..24?
 
     if self.phase >= 1.0 {
       self.phase -= 1.0;

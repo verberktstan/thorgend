@@ -1,7 +1,7 @@
 mod thorgend_params;
 use nih_plug::prelude::*;
 use std::sync::Arc;
-use thorgend_dsp::{FloatExt, Lfo, Notes, Voices};
+use thorgend_dsp::{FloatExt, Lfo, Notes, Voices, MAX_NUM_CPS};
 use thorgend_params::ThorgendParams;
 
 pub struct Thorgend {
@@ -103,8 +103,8 @@ impl Plugin for Thorgend {
     let scale_amp = self.params.scale_amp.value();
     let scale_dur = self.params.scale_dur.value();
     let lfo_rate = self.params.lfo_rate.value();
-    // TODO(step B): let lfo_mul = self.params.lfo_mul.value();
-    // TODO(step B): let lfo_add = self.params.lfo_add.value();
+    let lfo_mul = self.params.lfo_mul.value();
+    let lfo_add = self.params.lfo_add.value();
     let attack = self.params.attack.value();
     let decay = self.params.decay.value();
     let release = self.params.release.value();
@@ -118,10 +118,8 @@ impl Plugin for Thorgend {
       let sustain = self.params.sustain.smoothed.next();
       let output_gain = self.params.output_gain.smoothed.next();
 
-      // TODO(step B): replace formula below with:
-      //   let lfo_out = self.lfo.process(lfo_rate);
-      //   let num_cps = (mod_bias + lfo_out * mod_index).clamp(0.0, 1.0);
-      let num_cps = self.lfo.process(lfo_rate).map_range(-1.0, 1.0, 0.0, 1.0);
+      let num_cps = (self.lfo.process(lfo_rate) * lfo_mul + lfo_add)
+        .map_range(-1.0, 1.0, 1.0, MAX_NUM_CPS as f32) as usize; // NOTE: Gendy1 is responsible for clamping their inputs
       let voices_out = self.voices.process(
         amp_dist,
         dur_dist,

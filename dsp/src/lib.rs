@@ -2,6 +2,7 @@ mod gendy1;
 mod linear_adsr;
 mod notes;
 mod lfo;
+pub use gendy1::MAX_NUM_CPS;
 pub use lfo::Lfo;
 pub use shared::float_ext::FloatExt;
 mod shared {
@@ -14,7 +15,6 @@ use crate::{
   notes::{ADSRStage, Note},
 };
 
-pub const MAX_NUM_CPS: usize = 12;
 const MAX_VOICE_COUNT: usize = 8;
 const ADSR_RETRIGGER_TIME_IN_MS: f32 = 2.;
 
@@ -45,7 +45,7 @@ impl Voices {
     a_dur: f32,
     scale_amp: f32,
     scale_dur: f32,
-    num_cps: f32,
+    num_cps: usize,
     attack: f32,
     decay: f32,
     sustain: f32,
