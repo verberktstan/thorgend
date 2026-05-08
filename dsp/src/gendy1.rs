@@ -1,4 +1,4 @@
-pub const MAX_NUM_CPS: usize = 12;
+pub const MAX_NUM_CPS: usize = 24;
 
 // Probability distributions ported from Gendyn_distribution() in GendynUGens.cpp
 fn gendyn_dist(which: i32, a: f32, f: f32) -> f32 {

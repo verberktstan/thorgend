@@ -108,7 +108,7 @@ impl Default for ThorgendParams {
         },
       ),
 
-      lfo_add: FloatParam::new("LFO Add", 0.0, FloatRange::Linear { min: 0.0, max: 1.0 }),
+      lfo_add: FloatParam::new("LFO Add", 0.0, FloatRange::Linear { min: -1.0, max: 1.0 }),
 
       voices: IntParam::new("Voices", 1, IntRange::Linear { min: 1, max: 16 }),
 
