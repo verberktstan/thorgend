@@ -1,4 +1,4 @@
-pub const MAX_NUM_CPS: usize = 12;
+pub const MAX_NUM_CPS: usize = 24;
 
 // Probability distributions ported from Gendyn_distribution() in GendynUGens.cpp
 fn gendyn_dist(which: i32, a: f32, f: f32) -> f32 {
@@ -104,7 +104,7 @@ trait Gendy {
     max_freq: f32,
     scale_amp: f32,
     scale_dur: f32,
-    num_cps: usize,
+    num_cps: f32,
   ) -> f32;
 }
 
@@ -168,13 +168,7 @@ impl Gendy1 {
     scale_dur: f32,
     num_cps: usize,
   ) -> f32 {
-    let num = {
-      if num_cps >= 1 && num_cps <= MAX_NUM_CPS {
-        num_cps
-      } else {
-        MAX_NUM_CPS
-      }
-    };
+      let num = num_cps.clamp(1, MAX_NUM_CPS); // TODO: Reconsider num_cps range to extend to 1..24?
 
     if self.phase >= 1.0 {
       self.phase -= 1.0;

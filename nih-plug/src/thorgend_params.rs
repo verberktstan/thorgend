@@ -1,5 +1,4 @@
 use nih_plug::prelude::*;
-use thorgend_dsp::MAX_NUM_CPS;
 mod custom_formatters;
 use crate::thorgend_params::custom_formatters::{s2v_f32_ms_then_s, v2s_f32_ms_then_s};
 use nih_plug::formatters::{s2v_f32_gain_to_db, v2s_f32_gain_to_db, v2s_f32_rounded};
@@ -30,9 +29,14 @@ pub struct ThorgendParams {
   #[id = "durscale"]
   pub scale_dur: FloatParam,
 
-  /// Number of active control points (breakpoints per cycle)
-  #[id = "numcps"]
-  pub num_cps: IntParam,
+  #[id = "lfo_rate"]
+  pub lfo_rate: FloatParam,
+
+  #[id = "lfo_mul"]
+  pub lfo_mul: FloatParam,
+
+  #[id = "lfo_add"]
+  pub lfo_add: FloatParam,
 
   #[id = "voices"]
   pub voices: IntParam,
@@ -82,14 +86,29 @@ impl Default for ThorgendParams {
 
       scale_dur: FloatParam::new("Dur Scale", 0.5, FloatRange::Linear { min: 0.0, max: 1.0 }),
 
-      num_cps: IntParam::new(
-        "Num Control Points",
-        MAX_NUM_CPS as i32,
-        IntRange::Linear {
-          min: 1,
-          max: MAX_NUM_CPS as i32,
+      lfo_rate: FloatParam::new(
+        "LFO Rate",
+        0.5,
+        FloatRange::Skewed {
+          min: 0.01,
+          max: 20.0,
+          factor: FloatRange::skew_factor(-2.0),
+        },
+      )
+      .with_unit(" Hz")
+      .with_value_to_string(formatters::v2s_f32_rounded(2)),
+
+      lfo_mul: FloatParam::new(
+        "LFO Mul",
+        0.5,
+        FloatRange::Skewed {
+          min: 0.0,
+          max: 1.0,
+          factor: 0.5,
         },
       ),
+
+      lfo_add: FloatParam::new("LFO Add", 0.0, FloatRange::Linear { min: -1.0, max: 1.0 }),
 
       voices: IntParam::new("Voices", 1, IntRange::Linear { min: 1, max: 16 }),
 
