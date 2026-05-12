@@ -10,6 +10,7 @@ pub struct Thorgend {
   voices: Voices,
   notes: Notes,
   lfo: Lfo,
+  lfo2: Lfo,
 }
 
 impl Default for Thorgend {
@@ -20,6 +21,7 @@ impl Default for Thorgend {
       voices: Voices::new(44100.0),
       notes: Notes::new(),
       lfo: Lfo::new(44100.0),
+      lfo2: Lfo::new(44100.0),
     }
   }
 }
@@ -82,6 +84,7 @@ impl Plugin for Thorgend {
     self.sample_rate = buffer_config.sample_rate;
     self.voices = Voices::new(buffer_config.sample_rate);
     self.lfo = Lfo::new(buffer_config.sample_rate);
+    self.lfo2 = Lfo::new(buffer_config.sample_rate);
 
     true
   }
@@ -96,15 +99,18 @@ impl Plugin for Thorgend {
     _aux: &mut AuxiliaryBuffers,
     context: &mut impl ProcessContext<Self>,
   ) -> ProcessStatus {
-    let amp_dist = self.params.amp_dist.value();
-    let dur_dist = self.params.dur_dist.value();
-    let a_amp = self.params.a_amp.value();
-    let a_dur = self.params.a_dur.value();
+    let amp_dist = 2; // LOGISTIC
+    let dur_dist = 3; // HYPERBCOS
+    let a_amp = 1.0_f32;
+    let a_dur = 1.0_f32;
     let scale_amp = self.params.scale_amp.value();
     let scale_dur = self.params.scale_dur.value();
     let lfo_rate = self.params.lfo_rate.value();
     let lfo_mul = self.params.lfo_mul.value();
     let lfo_add = self.params.lfo_add.value();
+    let noisespeed = self.params.noisespeed.value();
+    let noiseindex = self.params.noiseindex.value();
+    let noisyness = self.params.noisyness.value();
     let attack = self.params.attack.value();
     let decay = self.params.decay.value();
     let release = self.params.release.value();
@@ -120,13 +126,16 @@ impl Plugin for Thorgend {
 
       let num_cps = (self.lfo.process(lfo_rate) * lfo_mul + lfo_add)
         .map_range(-1.0, 1.0, 1.0, MAX_NUM_CPS as f32) as usize; // NOTE: Gendy1 is responsible for clamping their inputs
+      let lfo2_out = self.lfo2.process(noisespeed) * noiseindex + noisyness;
+      let effective_scale_amp = (scale_amp + lfo2_out).clamp(0.0, 1.0);
+      let effective_scale_dur = (scale_dur + lfo2_out).clamp(0.0, 1.0);
       let voices_out = self.voices.process(
         amp_dist,
         dur_dist,
         a_amp,
         a_dur,
-        scale_amp,
-        scale_dur,
+        effective_scale_amp,
+        effective_scale_dur,
         num_cps,
         attack,
         decay,

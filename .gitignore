@@ -4,3 +4,5 @@ flamegraph.svg
 lv2/**/*.so
 lv2/**/*.dylib
 lv2/**/*.dll
+/AGENTS.md
+/CLAUDE.md

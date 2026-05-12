@@ -17,6 +17,8 @@ use crate::{
 
 const MAX_VOICE_COUNT: usize = 8;
 const ADSR_RETRIGGER_TIME_IN_MS: f32 = 2.;
+const LOWEST_MIDI_HZ: f32 = 8.18;
+const HIGHEST_MIDI_HZ: f32 = 13289.75;
 
 pub struct Voices {
   oscillator: Vec<Gendy1>,
@@ -69,8 +71,8 @@ impl Voices {
         dur_dist,
         a_amp,
         a_dur,
-        freq,
-        freq * 2., // TODO: add something like a bandwidth param
+        freq.clamp(LOWEST_MIDI_HZ, HIGHEST_MIDI_HZ),
+        (freq * 8.).clamp(LOWEST_MIDI_HZ, HIGHEST_MIDI_HZ),
         scale_amp,
         scale_dur,
         num_cps,
