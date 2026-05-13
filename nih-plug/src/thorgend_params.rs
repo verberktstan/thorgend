@@ -5,22 +5,6 @@ use nih_plug::formatters::{s2v_f32_gain_to_db, v2s_f32_gain_to_db, v2s_f32_round
 
 #[derive(Params)]
 pub struct ThorgendParams {
-  /// Probability distribution for amplitude random walk (0=linear, 1=Cauchy, 2=logistic, 3=hyperbcos, 4=arcsine, 5=expon, 6=sinus)
-  #[id = "ampdist"]
-  pub amp_dist: IntParam,
-
-  /// Probability distribution for duration random walk
-  #[id = "durdist"]
-  pub dur_dist: IntParam,
-
-  /// Shape parameter for amplitude distribution [0.0001, 1.0]
-  #[id = "aparam"]
-  pub a_amp: FloatParam,
-
-  /// Shape parameter for duration distribution [0.0001, 1.0]
-  #[id = "dparam"]
-  pub a_dur: FloatParam,
-
   /// Scale factor for amplitude step size
   #[id = "ampscale"]
   pub scale_amp: FloatParam,
@@ -29,14 +13,17 @@ pub struct ThorgendParams {
   #[id = "durscale"]
   pub scale_dur: FloatParam,
 
-  #[id = "lfo_rate"]
-  pub lfo_rate: FloatParam,
+  #[id = "num_cps"]
+  pub num_cps: IntParam,
 
-  #[id = "lfo_mul"]
-  pub lfo_mul: FloatParam,
+  #[id = "noisespeed"]
+  pub noisespeed: FloatParam,
 
-  #[id = "lfo_add"]
-  pub lfo_add: FloatParam,
+  #[id = "noiseindex"]
+  pub noiseindex: FloatParam,
+
+  #[id = "noisyness"]
+  pub noisyness: FloatParam,
 
   #[id = "voices"]
   pub voices: IntParam,
@@ -60,34 +47,14 @@ pub struct ThorgendParams {
 impl Default for ThorgendParams {
   fn default() -> Self {
     Self {
-      amp_dist: IntParam::new("Amp Distribution", 1, IntRange::Linear { min: 0, max: 6 }),
-
-      dur_dist: IntParam::new("Dur Distribution", 1, IntRange::Linear { min: 0, max: 6 }),
-
-      a_amp: FloatParam::new(
-        "Amp Param",
-        1.0,
-        FloatRange::Linear {
-          min: 0.0001,
-          max: 1.0,
-        },
-      ),
-
-      a_dur: FloatParam::new(
-        "Dur Param",
-        1.0,
-        FloatRange::Linear {
-          min: 0.0001,
-          max: 1.0,
-        },
-      ),
-
       scale_amp: FloatParam::new("Amp Scale", 0.5, FloatRange::Linear { min: 0.0, max: 1.0 }),
 
       scale_dur: FloatParam::new("Dur Scale", 0.5, FloatRange::Linear { min: 0.0, max: 1.0 }),
 
-      lfo_rate: FloatParam::new(
-        "LFO Rate",
+      num_cps: IntParam::new("Richness", 7, IntRange::Linear { min: 1, max: 18 }),
+
+      noisespeed: FloatParam::new(
+        "Noise Speed",
         0.5,
         FloatRange::Skewed {
           min: 0.01,
@@ -98,17 +65,9 @@ impl Default for ThorgendParams {
       .with_unit(" Hz")
       .with_value_to_string(formatters::v2s_f32_rounded(2)),
 
-      lfo_mul: FloatParam::new(
-        "LFO Mul",
-        0.5,
-        FloatRange::Skewed {
-          min: 0.0,
-          max: 1.0,
-          factor: 0.5,
-        },
-      ),
+      noiseindex: FloatParam::new("Noise Index", 0.0, FloatRange::Linear { min: 0.0, max: 1.0 }),
 
-      lfo_add: FloatParam::new("LFO Add", 0.0, FloatRange::Linear { min: -1.0, max: 1.0 }),
+      noisyness: FloatParam::new("Noisyness", 0.0, FloatRange::Linear { min: -1.0, max: 1.0 }),
 
       voices: IntParam::new("Voices", 1, IntRange::Linear { min: 1, max: 16 }),
 

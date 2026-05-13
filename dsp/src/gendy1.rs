@@ -168,7 +168,7 @@ impl Gendy1 {
     scale_dur: f32,
     num_cps: usize,
   ) -> f32 {
-      let num = num_cps.clamp(1, MAX_NUM_CPS); // TODO: Reconsider num_cps range to extend to 1..24?
+      let num = num_cps.clamp(1, 18);
 
     if self.phase >= 1.0 {
       self.phase -= 1.0;
