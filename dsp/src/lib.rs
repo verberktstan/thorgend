@@ -2,7 +2,6 @@ mod gendy1;
 mod linear_adsr;
 mod notes;
 mod lfo;
-pub use gendy1::MAX_NUM_CPS;
 pub use lfo::Lfo;
 pub use shared::float_ext::FloatExt;
 mod shared {

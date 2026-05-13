@@ -13,14 +13,8 @@ pub struct ThorgendParams {
   #[id = "durscale"]
   pub scale_dur: FloatParam,
 
-  #[id = "lfo_rate"]
-  pub lfo_rate: FloatParam,
-
-  #[id = "lfo_mul"]
-  pub lfo_mul: FloatParam,
-
-  #[id = "lfo_add"]
-  pub lfo_add: FloatParam,
+  #[id = "num_cps"]
+  pub num_cps: IntParam,
 
   #[id = "noisespeed"]
   pub noisespeed: FloatParam,
@@ -57,29 +51,7 @@ impl Default for ThorgendParams {
 
       scale_dur: FloatParam::new("Dur Scale", 0.5, FloatRange::Linear { min: 0.0, max: 1.0 }),
 
-      lfo_rate: FloatParam::new(
-        "LFO Rate",
-        0.5,
-        FloatRange::Skewed {
-          min: 0.01,
-          max: 20.0,
-          factor: FloatRange::skew_factor(-2.0),
-        },
-      )
-      .with_unit(" Hz")
-      .with_value_to_string(formatters::v2s_f32_rounded(2)),
-
-      lfo_mul: FloatParam::new(
-        "LFO Mul",
-        0.5,
-        FloatRange::Skewed {
-          min: 0.0,
-          max: 1.0,
-          factor: 0.5,
-        },
-      ),
-
-      lfo_add: FloatParam::new("LFO Add", 0.0, FloatRange::Linear { min: -1.0, max: 1.0 }),
+      num_cps: IntParam::new("Richness", 7, IntRange::Linear { min: 1, max: 18 }),
 
       noisespeed: FloatParam::new(
         "Noise Speed",

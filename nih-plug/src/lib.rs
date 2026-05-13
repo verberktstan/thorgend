@@ -1,7 +1,7 @@
 mod thorgend_params;
 use nih_plug::prelude::*;
 use std::sync::Arc;
-use thorgend_dsp::{FloatExt, Lfo, Notes, Voices, MAX_NUM_CPS};
+use thorgend_dsp::{Lfo, Notes, Voices};
 use thorgend_params::ThorgendParams;
 
 pub struct Thorgend {
@@ -9,7 +9,6 @@ pub struct Thorgend {
   sample_rate: f32,
   voices: Voices,
   notes: Notes,
-  lfo: Lfo,
   lfo2: Lfo,
 }
 
@@ -20,7 +19,6 @@ impl Default for Thorgend {
       sample_rate: 44100.0,
       voices: Voices::new(44100.0),
       notes: Notes::new(),
-      lfo: Lfo::new(44100.0),
       lfo2: Lfo::new(44100.0),
     }
   }
@@ -83,7 +81,6 @@ impl Plugin for Thorgend {
   ) -> bool {
     self.sample_rate = buffer_config.sample_rate;
     self.voices = Voices::new(buffer_config.sample_rate);
-    self.lfo = Lfo::new(buffer_config.sample_rate);
     self.lfo2 = Lfo::new(buffer_config.sample_rate);
 
     true
@@ -105,9 +102,7 @@ impl Plugin for Thorgend {
     let a_dur = 1.0_f32;
     let scale_amp = self.params.scale_amp.value();
     let scale_dur = self.params.scale_dur.value();
-    let lfo_rate = self.params.lfo_rate.value();
-    let lfo_mul = self.params.lfo_mul.value();
-    let lfo_add = self.params.lfo_add.value();
+    let num_cps = self.params.num_cps.value() as usize;
     let noisespeed = self.params.noisespeed.value();
     let noiseindex = self.params.noiseindex.value();
     let noisyness = self.params.noisyness.value();
@@ -124,8 +119,6 @@ impl Plugin for Thorgend {
       let sustain = self.params.sustain.smoothed.next();
       let output_gain = self.params.output_gain.smoothed.next();
 
-      let num_cps = (self.lfo.process(lfo_rate) * lfo_mul + lfo_add)
-        .map_range(-1.0, 1.0, 1.0, MAX_NUM_CPS as f32) as usize; // NOTE: Gendy1 is responsible for clamping their inputs
       let lfo2_out = self.lfo2.process(noisespeed) * noiseindex + noisyness;
       let effective_scale_amp = (scale_amp + lfo2_out).clamp(0.0, 1.0);
       let effective_scale_dur = (scale_dur + lfo2_out).clamp(0.0, 1.0);
