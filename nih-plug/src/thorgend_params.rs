@@ -42,6 +42,10 @@ pub struct ThorgendParams {
   pub lfo_drive: FloatParam,
 }
 
+fn freq_skew_factor() -> f32 {
+  FloatRange::skew_factor(-2.0)
+}
+
 impl Default for ThorgendParams {
   fn default() -> Self {
     Self {
@@ -53,7 +57,7 @@ impl Default for ThorgendParams {
         FloatRange::Skewed {
           min: 0.01,
           max: 20.0,
-          factor: FloatRange::skew_factor(-2.0),
+          factor: freq_skew_factor(),
         },
       )
       .with_unit(" Hz")
@@ -135,7 +139,7 @@ impl Default for ThorgendParams {
         FloatRange::Skewed {
           min: 2.0,
           max: 200.0,
-          factor: FloatRange::skew_factor(-2.0),
+          factor: freq_skew_factor(),
         },
       )
       .with_unit(" Hz")
