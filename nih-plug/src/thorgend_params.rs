@@ -5,14 +5,6 @@ use nih_plug::formatters::{s2v_f32_gain_to_db, v2s_f32_gain_to_db, v2s_f32_round
 
 #[derive(Params)]
 pub struct ThorgendParams {
-  /// Scale factor for amplitude step size
-  #[id = "ampscale"]
-  pub scale_amp: FloatParam,
-
-  /// Scale factor for duration step size
-  #[id = "durscale"]
-  pub scale_dur: FloatParam,
-
   #[id = "num_cps"]
   pub num_cps: IntParam,
 
@@ -53,10 +45,6 @@ pub struct ThorgendParams {
 impl Default for ThorgendParams {
   fn default() -> Self {
     Self {
-      scale_amp: FloatParam::new("Amp Scale", 0.5, FloatRange::Linear { min: 0.0, max: 1.0 }),
-
-      scale_dur: FloatParam::new("Dur Scale", 0.5, FloatRange::Linear { min: 0.0, max: 1.0 }),
-
       num_cps: IntParam::new("Richness", 7, IntRange::Linear { min: 2, max: 18 }),
 
       noisespeed: FloatParam::new(

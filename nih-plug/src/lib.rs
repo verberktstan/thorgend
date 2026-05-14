@@ -96,8 +96,6 @@ impl Plugin for Thorgend {
     _aux: &mut AuxiliaryBuffers,
     context: &mut impl ProcessContext<Self>,
   ) -> ProcessStatus {
-    let scale_amp = self.params.scale_amp.value();
-    let scale_dur = self.params.scale_dur.value();
     let num_cps = self.params.num_cps.value() as usize;
     let noisespeed = self.params.noisespeed.value();
     let noiseindex = util::db_to_gain(self.params.noiseindex.value() * 60.0 - 60.0);
@@ -118,8 +116,8 @@ impl Plugin for Thorgend {
       let output_gain = self.params.output_gain.smoothed.next();
 
       let lfo2_out = self.lfo2.process(noisespeed, lfo_sh_freq, lfo_drive, 0.0) * noiseindex + noisyness;
-      let effective_scale_amp = (scale_amp + lfo2_out).clamp(0.0, 1.0);
-      let effective_scale_dur = (scale_dur + lfo2_out).clamp(0.0, 1.0);
+      let effective_scale_amp = (0.5_f32 + lfo2_out).clamp(0.0, 1.0);
+      let effective_scale_dur = (0.5_f32 + lfo2_out).clamp(0.0, 1.0);
       let voices_out = self.voices.process(
         AMP_DIST,
         DUR_DIST,
