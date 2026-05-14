@@ -57,7 +57,7 @@ impl Default for ThorgendParams {
 
       scale_dur: FloatParam::new("Dur Scale", 0.5, FloatRange::Linear { min: 0.0, max: 1.0 }),
 
-      num_cps: IntParam::new("Richness", 7, IntRange::Linear { min: 1, max: 18 }),
+      num_cps: IntParam::new("Richness", 7, IntRange::Linear { min: 2, max: 18 }),
 
       noisespeed: FloatParam::new(
         "Noise Speed",

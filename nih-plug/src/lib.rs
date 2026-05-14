@@ -100,7 +100,7 @@ impl Plugin for Thorgend {
     let scale_dur = self.params.scale_dur.value();
     let num_cps = self.params.num_cps.value() as usize;
     let noisespeed = self.params.noisespeed.value();
-    let noiseindex = self.params.noiseindex.value();
+    let noiseindex = util::db_to_gain(self.params.noiseindex.value() * 60.0 - 60.0);
     let noisyness = self.params.noisyness.value();
     let attack = self.params.attack.value();
     let decay = self.params.decay.value();
