@@ -2,6 +2,7 @@ mod gendy1;
 mod linear_adsr;
 mod notes;
 mod lfo;
+mod pitch_drift_compensation;
 pub use lfo::Lfo;
 pub use shared::float_ext::FloatExt;
 mod shared {
@@ -18,6 +19,14 @@ const MAX_VOICE_COUNT: usize = 8;
 const ADSR_RETRIGGER_TIME_IN_MS: f32 = 2.;
 const LOWEST_MIDI_HZ: f32 = 8.18;
 const HIGHEST_MIDI_HZ: f32 = 13289.75;
+
+// Hardcoded distributions passed to Gendy1::process. If you change DUR_DIST or A_DUR
+// you must re-run the dur_bar_measurement test and update the compensation coefficients
+// in pitch_drift_compensation.rs.
+pub const AMP_DIST: i32 = 2; // LOGISTIC
+pub const A_AMP: f32 = 1.0;
+pub const DUR_DIST: i32 = 3; // HYPERBCOS
+pub const A_DUR: f32 = 1.0;
 
 pub struct Voices {
   oscillator: Vec<Gendy1>,
@@ -65,13 +74,14 @@ impl Voices {
       }
       let envelope = adsr.process(note, attack, decay, sustain, release);
       let freq = adsr.get_freq();
+      let min_f = pitch_drift_compensation::compensated_min_freq(freq, scale_dur, dur_dist, a_dur).clamp(LOWEST_MIDI_HZ, HIGHEST_MIDI_HZ);
       let output = oscillator.process(
         amp_dist,
         dur_dist,
         a_amp,
         a_dur,
-        freq.clamp(LOWEST_MIDI_HZ, HIGHEST_MIDI_HZ),
-        (freq * 8.).clamp(LOWEST_MIDI_HZ, HIGHEST_MIDI_HZ),
+        min_f,
+        (min_f * 8.).clamp(LOWEST_MIDI_HZ, HIGHEST_MIDI_HZ),
         scale_amp,
         scale_dur,
         num_cps,

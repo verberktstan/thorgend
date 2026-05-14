@@ -1,7 +1,7 @@
 mod thorgend_params;
 use nih_plug::prelude::*;
 use std::sync::Arc;
-use thorgend_dsp::{Lfo, Notes, Voices};
+use thorgend_dsp::{Lfo, Notes, Voices, AMP_DIST, A_AMP, DUR_DIST, A_DUR};
 use thorgend_params::ThorgendParams;
 
 pub struct Thorgend {
@@ -96,10 +96,6 @@ impl Plugin for Thorgend {
     _aux: &mut AuxiliaryBuffers,
     context: &mut impl ProcessContext<Self>,
   ) -> ProcessStatus {
-    let amp_dist = 2; // LOGISTIC
-    let dur_dist = 3; // HYPERBCOS
-    let a_amp = 1.0_f32;
-    let a_dur = 1.0_f32;
     let scale_amp = self.params.scale_amp.value();
     let scale_dur = self.params.scale_dur.value();
     let num_cps = self.params.num_cps.value() as usize;
@@ -123,10 +119,10 @@ impl Plugin for Thorgend {
       let effective_scale_amp = (scale_amp + lfo2_out).clamp(0.0, 1.0);
       let effective_scale_dur = (scale_dur + lfo2_out).clamp(0.0, 1.0);
       let voices_out = self.voices.process(
-        amp_dist,
-        dur_dist,
-        a_amp,
-        a_dur,
+        AMP_DIST,
+        DUR_DIST,
+        A_AMP,
+        A_DUR,
         effective_scale_amp,
         effective_scale_dur,
         num_cps,

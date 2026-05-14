@@ -90,6 +90,43 @@ fn mirror_dur(mut v: f32) -> f32 {
   v
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Measures steady-state E[dur] as a function of scale_dur.
+    ///
+    /// Run with:
+    ///   cargo test --manifest-path dsp/Cargo.toml dur_bar_measurement -- --ignored --nocapture
+    ///
+    /// Output drives the pitch-compensation table in dsp/src/lib.rs.
+    #[test]
+    #[ignore]
+    fn dur_bar_measurement() {
+        const WARMUP: usize = 2_000;
+        const SAMPLES: usize = 500_000;
+        const DIST: i32 = 3; // HYPERBCOS — hardcoded dur distribution
+        const A: f32 = 1.0; // hardcoded a_dur
+
+        println!("scale_dur  dur_bar");
+        for i in 0..=20usize {
+            let scale_dur = i as f32 / 20.0;
+            let mut dur = 0.5_f32;
+            let mut sum = 0.0_f64;
+
+            for j in 0..(WARMUP + SAMPLES) {
+                let perturbation = scale_dur * gendyn_dist(DIST, A, fastrand::f32());
+                dur = mirror_dur(dur + perturbation);
+                if j >= WARMUP {
+                    sum += dur as f64;
+                }
+            }
+
+            println!("{:.2}         {:.6}", scale_dur, sum / SAMPLES as f64);
+        }
+    }
+}
+
 trait Gendy {
   fn new(sample_rate: f32) -> Self;
   fn reset(&mut self);
