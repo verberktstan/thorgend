@@ -106,7 +106,7 @@ impl Plugin for Thorgend {
     let decay = self.params.decay.value();
     let release = self.params.release.value();
     let lfo_sh_freq = self.params.lfo_sh_freq.value();
-    let lfo_drive = 1.0;
+    let lfo_drive = util::db_to_gain(self.params.lfo_drive.value());
     self
       .notes
       .set_voice_count(self.params.voices.value() as usize);

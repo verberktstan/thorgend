@@ -45,6 +45,9 @@ pub struct ThorgendParams {
 
   #[id = "lfo_sh_freq"]
   pub lfo_sh_freq: FloatParam,
+
+  #[id = "lfo_drive"]
+  pub lfo_drive: FloatParam,
 }
 
 impl Default for ThorgendParams {
@@ -150,6 +153,13 @@ impl Default for ThorgendParams {
       .with_unit(" Hz")
       .with_value_to_string(formatters::v2s_f32_rounded(1)),
 
+      lfo_drive: FloatParam::new(
+        "LFO Drive",
+        0.0,
+        FloatRange::Linear { min: 0.0, max: 24.0 },
+      )
+      .with_unit(" dB")
+      .with_value_to_string(formatters::v2s_f32_rounded(1)),
     }
   }
 }

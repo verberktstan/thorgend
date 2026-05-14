@@ -26,6 +26,7 @@ impl Lfo {
     if self.sh_phase >= 1.0 {
       self.sh_phase -= 1.0;
       let sine = (self.phase * std::f32::consts::TAU).sin();
+      self.sh_held = (sine * drive).tanh();
     }
 
     self.sh_held
