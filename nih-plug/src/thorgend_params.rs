@@ -39,7 +39,7 @@ pub struct ThorgendParams {
   pub lfo_sh_freq: FloatParam,
 
   #[id = "lfo_drive"]
-  pub lfo_drive: FloatParam,
+  pub dichotomization: FloatParam,
 }
 
 fn freq_skew_factor() -> f32 {
@@ -145,8 +145,8 @@ impl Default for ThorgendParams {
       .with_unit(" Hz")
       .with_value_to_string(formatters::v2s_f32_rounded(1)),
 
-      lfo_drive: FloatParam::new(
-        "LFO Drive",
+      dichotomization: FloatParam::new(
+        "Dichotomization",
         0.0,
         FloatRange::Linear { min: 0.0, max: 24.0 },
       )
