@@ -5,20 +5,11 @@ use nih_plug::formatters::{s2v_f32_gain_to_db, v2s_f32_gain_to_db, v2s_f32_round
 
 #[derive(Params)]
 pub struct ThorgendParams {
-  #[id = "num_cps"]
-  pub num_cps: IntParam,
-
-  #[id = "noisespeed"]
-  pub noisespeed: FloatParam,
-
-  #[id = "noiseindex"]
-  pub noiseindex: FloatParam,
-
-  #[id = "noisyness"]
-  pub noisyness: FloatParam,
-
   #[id = "voices"]
   pub voices: IntParam,
+
+  #[id = "num_cps"]
+  pub num_cps: IntParam,
 
   #[id = "attack"]
   pub attack: FloatParam,
@@ -34,6 +25,15 @@ pub struct ThorgendParams {
 
   #[id = "output_gain"]
   pub output_gain: FloatParam,
+
+  #[id = "noisyness"]
+  pub noisyness: FloatParam,
+
+  #[id = "noiseindex"]
+  pub noiseindex: FloatParam,
+
+  #[id = "noisespeed"]
+  pub noisespeed: FloatParam,
 
   #[id = "lfo_sh_freq"]
   pub lfo_sh_freq: FloatParam,
