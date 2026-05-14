@@ -105,6 +105,8 @@ impl Plugin for Thorgend {
     let attack = self.params.attack.value();
     let decay = self.params.decay.value();
     let release = self.params.release.value();
+    let lfo_sh_freq = self.params.lfo_sh_freq.value();
+    let lfo_drive = 1.0;
     self
       .notes
       .set_voice_count(self.params.voices.value() as usize);
@@ -115,7 +117,7 @@ impl Plugin for Thorgend {
       let sustain = self.params.sustain.smoothed.next();
       let output_gain = self.params.output_gain.smoothed.next();
 
-      let lfo2_out = self.lfo2.process(noisespeed) * noiseindex + noisyness;
+      let lfo2_out = self.lfo2.process(noisespeed, lfo_sh_freq, lfo_drive, 0.0) * noiseindex + noisyness;
       let effective_scale_amp = (scale_amp + lfo2_out).clamp(0.0, 1.0);
       let effective_scale_dur = (scale_dur + lfo2_out).clamp(0.0, 1.0);
       let voices_out = self.voices.process(

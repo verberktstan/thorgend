@@ -42,6 +42,9 @@ pub struct ThorgendParams {
 
   #[id = "output_gain"]
   pub output_gain: FloatParam,
+
+  #[id = "lfo_sh_freq"]
+  pub lfo_sh_freq: FloatParam,
 }
 
 impl Default for ThorgendParams {
@@ -134,6 +137,19 @@ impl Default for ThorgendParams {
       .with_unit(" dB")
       .with_value_to_string(v2s_f32_gain_to_db(2))
       .with_string_to_value(s2v_f32_gain_to_db()),
+
+      lfo_sh_freq: FloatParam::new(
+        "LFO S&H Freq",
+        200.0,
+        FloatRange::Skewed {
+          min: 2.0,
+          max: 200.0,
+          factor: FloatRange::skew_factor(-2.0),
+        },
+      )
+      .with_unit(" Hz")
+      .with_value_to_string(formatters::v2s_f32_rounded(1)),
+
     }
   }
 }
