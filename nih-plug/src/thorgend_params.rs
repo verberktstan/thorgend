@@ -52,7 +52,7 @@ impl Default for ThorgendParams {
       num_cps: IntParam::new("Richness", 7, IntRange::Linear { min: 2, max: 18 }),
 
       noisespeed: FloatParam::new(
-        "Noise Speed",
+        "Noisyness Rate",
         0.5,
         FloatRange::Skewed {
           min: 0.01,
@@ -63,7 +63,7 @@ impl Default for ThorgendParams {
       .with_unit(" Hz")
       .with_value_to_string(formatters::v2s_f32_rounded(2)),
 
-      noiseindex: FloatParam::new("Noise Index", 0.0, FloatRange::Linear { min: 0.0, max: 1.0 }),
+      noiseindex: FloatParam::new("Noise Complexity", 0.0, FloatRange::Linear { min: 0.0, max: 1.0 }),
 
       noisyness: FloatParam::new("Noisyness", 0.0, FloatRange::Linear { min: -1.0, max: 1.0 }),
 
@@ -134,7 +134,7 @@ impl Default for ThorgendParams {
       .with_string_to_value(s2v_f32_gain_to_db()),
 
       lfo_sh_freq: FloatParam::new(
-        "LFO S&H Freq",
+        "Variousity",
         200.0,
         FloatRange::Skewed {
           min: 2.0,
