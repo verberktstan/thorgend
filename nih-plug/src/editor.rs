@@ -15,6 +15,8 @@ pub fn create(params: Arc<ThorgendParams>, egui_state: Arc<EguiState>) -> Option
 }
 
 fn draw(ctx: &egui::Context, setter: &ParamSetter, params: &Arc<ThorgendParams>) {
+  let noise_active = params.noiseindex.value() > 0.0;
+
   egui::CentralPanel::default().show(ctx, |ui| {
     ui.add(ParamSlider::for_param(&params.voices, setter));
     ui.add(ParamSlider::for_param(&params.num_cps, setter));
@@ -25,8 +27,8 @@ fn draw(ctx: &egui::Context, setter: &ParamSetter, params: &Arc<ThorgendParams>)
     ui.add(ParamSlider::for_param(&params.output_gain, setter));
     ui.add(ParamSlider::for_param(&params.noisyness, setter));
     ui.add(ParamSlider::for_param(&params.noiseindex, setter));
-    ui.add(ParamSlider::for_param(&params.noisespeed, setter));
-    ui.add(ParamSlider::for_param(&params.lfo_sh_freq, setter));
-    ui.add(ParamSlider::for_param(&params.dichotomization, setter));
+    ui.add_enabled(noise_active, ParamSlider::for_param(&params.noisespeed, setter));
+    ui.add_enabled(noise_active, ParamSlider::for_param(&params.lfo_sh_freq, setter));
+    ui.add_enabled(noise_active, ParamSlider::for_param(&params.dichotomization, setter));
   });
 }
