@@ -3,7 +3,9 @@ mod linear_adsr;
 mod notes;
 mod lfo;
 mod pitch_drift_compensation;
+mod sample_and_hold;
 pub use lfo::Lfo;
+pub use sample_and_hold::SampleAndHold;
 pub use shared::float_ext::FloatExt;
 mod shared {
   pub mod float_ext;
