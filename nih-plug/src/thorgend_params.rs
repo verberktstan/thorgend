@@ -32,17 +32,15 @@ pub struct ThorgendParams {
   #[id = "noiseindex"]
   pub noiseindex: FloatParam,
 
-  #[id = "noisespeed"]
-  pub noisespeed: FloatParam,
-
-  #[id = "lfo_sh_freq"]
-  pub lfo_sh_freq: FloatParam,
 
   #[id = "lfo_drive"]
   pub dichotomization: FloatParam,
+
+  #[id = "variousity_rate"]
+  pub variousity_rate: FloatParam,
 }
 
-fn freq_skew_factor() -> f32 {
+pub fn freq_skew_factor() -> f32 {
   FloatRange::skew_factor(-2.0)
 }
 
@@ -51,17 +49,6 @@ impl Default for ThorgendParams {
     Self {
       num_cps: IntParam::new("Richness", 7, IntRange::Linear { min: 2, max: 18 }),
 
-      noisespeed: FloatParam::new(
-        "Noisyness Rate",
-        0.5,
-        FloatRange::Skewed {
-          min: 0.01,
-          max: 20.0,
-          factor: freq_skew_factor(),
-        },
-      )
-      .with_unit(" Hz")
-      .with_value_to_string(formatters::v2s_f32_rounded(2)),
 
       noiseindex: FloatParam::new("Noise Complexity", 0.0, FloatRange::Linear { min: 0.0, max: 1.0 }),
 
@@ -133,17 +120,12 @@ impl Default for ThorgendParams {
       .with_value_to_string(v2s_f32_gain_to_db(2))
       .with_string_to_value(s2v_f32_gain_to_db()),
 
-      lfo_sh_freq: FloatParam::new(
-        "Variousity",
-        200.0,
-        FloatRange::Skewed {
-          min: 2.0,
-          max: 200.0,
-          factor: freq_skew_factor(),
-        },
-      )
-      .with_unit(" Hz")
-      .with_value_to_string(formatters::v2s_f32_rounded(1)),
+
+      variousity_rate: FloatParam::new(
+        "Variousity rate",
+        0.0,
+        FloatRange::Linear { min: 0.0, max: 1.0 },
+      ),
 
       dichotomization: FloatParam::new(
         "Dichotomization",
