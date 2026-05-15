@@ -18,10 +18,6 @@ How many blades the war-party carries. Each voice is a parallel soul singing the
 *Rich: abundant, layered, overflowing with detail.*
 The number of waypoints the waveform must traverse each cycle. A sparse few yields gaunt, skeletal tones; a full complement weaves a tapestry so dense it shimmers like dragon-scale armour.
 
-### Noisyness Rate
-*Noisome: that which disturbs and unsettles.*
-The speed at which the stochastic demon stirs the pot — how fast the pitch and timbre writhe and shift. Low values are slow, ominous dread; high values are the frenzied cackling of a goblin horde mid-ambush.
-
 ### Noise Complexity
 *Complexity: a labyrinth of interconnected parts, each hiding a new threat.*
 Controls how far the stochastic perturbations reach. Turn it low and the waveform breathes quietly; crank it and the sound fractures into wild unpredictability, like a dungeon that keeps reshaping its own corridors.
@@ -29,9 +25,9 @@ Controls how far the stochastic perturbations reach. Turn it low and the wavefor
 ### Noisyness
 The raw bias between order and chaos — a ranger's compass pointing anywhere from perfectly composed to deliriously unhinged.
 
-### Variousity
-*Various: manifold, ever-changing, never the same twice.*
-The sample-and-hold clock that throws the dice and locks in a new value. At low rates it lurches between frozen states like a troll deciding its next swing; at full speed the changes blur into continuous shimmer, the torchlight never quite settling.
+### Variousity rate
+*Various: manifold, ever-changing, never the same twice; noisome: that which disturbs and unsettles.*
+A single dial governing both the speed of stochastic change and the pace at which new fates are drawn. Turned low, the demon stirs slowly while the dice fall fast — frozen shimmer, barely breathing. Turned high, the pitch and timbre writhe at full frenzy while the sample-and-hold lurches in long, troll-like deliberation. Between the two extremes lies the balance of every chaos and every choice.
 
 ### Dichotomization
 *Dichotomy: the cleaving of one thing into two irreconcilable opposites.*
