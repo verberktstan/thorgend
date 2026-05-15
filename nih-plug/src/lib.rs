@@ -97,6 +97,10 @@ impl Plugin for Thorgend {
     context: &mut impl ProcessContext<Self>,
   ) -> ProcessStatus {
     let num_cps = self.params.num_cps.value() as usize;
+    let max_freq_factor = {
+      let normalized = ((num_cps as f32 - 2.0) / 16.0).clamp(0.0, 1.0);
+      2.0_f32.powf(1.0 + normalized * 4.0)
+    };
     let noisespeed = self.params.noisespeed.value();
     let noiseindex = util::db_to_gain(self.params.noiseindex.value() * 60.0 - 60.0);
     let noisyness = self.params.noisyness.value();
@@ -126,6 +130,7 @@ impl Plugin for Thorgend {
         effective_scale_amp,
         effective_scale_dur,
         num_cps,
+        max_freq_factor,
         attack,
         decay,
         sustain,

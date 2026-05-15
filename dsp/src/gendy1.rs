@@ -1,5 +1,9 @@
 pub const MAX_NUM_CPS: usize = 24;
 
+// MIDI note 0 → 8.18 Hz, MIDI note 128 → 13289.75 Hz
+const LOWEST_MIDI_HZ: f32 = 8.18;
+const HIGHEST_MIDI_HZ: f32 = 13289.75;
+
 // Probability distributions ported from Gendyn_distribution() in GendynUGens.cpp
 fn gendyn_dist(which: i32, a: f32, f: f32) -> f32 {
   let a = a.clamp(0.0001, 1.0);
@@ -206,6 +210,9 @@ impl Gendy1 {
     num_cps: usize,
   ) -> f32 {
       let num = num_cps.clamp(1, 18);
+
+    let min_freq = min_freq.clamp(LOWEST_MIDI_HZ, HIGHEST_MIDI_HZ);
+    let max_freq = max_freq.clamp(LOWEST_MIDI_HZ, HIGHEST_MIDI_HZ);
 
     if self.phase >= 1.0 {
       self.phase -= 1.0;

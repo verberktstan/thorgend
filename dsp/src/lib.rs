@@ -17,8 +17,6 @@ use crate::{
 
 const MAX_VOICE_COUNT: usize = 8;
 const ADSR_RETRIGGER_TIME_IN_MS: f32 = 2.;
-const LOWEST_MIDI_HZ: f32 = 8.18;
-const HIGHEST_MIDI_HZ: f32 = 13289.75;
 
 // Hardcoded distributions passed to Gendy1::process. If you change DUR_DIST or A_DUR
 // you must re-run the dur_bar_measurement test and update the compensation coefficients
@@ -56,6 +54,7 @@ impl Voices {
     scale_amp: f32,
     scale_dur: f32,
     num_cps: usize,
+    max_freq_factor: f32,
     attack: f32,
     decay: f32,
     sustain: f32,
@@ -74,14 +73,14 @@ impl Voices {
       }
       let envelope = adsr.process(note, attack, decay, sustain, release);
       let freq = adsr.get_freq();
-      let min_f = pitch_drift_compensation::compensated_min_freq(freq, scale_dur, dur_dist, a_dur).clamp(LOWEST_MIDI_HZ, HIGHEST_MIDI_HZ);
+      let min_f = pitch_drift_compensation::compensated_min_freq(freq, scale_dur, dur_dist, a_dur);
       let output = oscillator.process(
         amp_dist,
         dur_dist,
         a_amp,
         a_dur,
         min_f,
-        (min_f * 8.).clamp(LOWEST_MIDI_HZ, HIGHEST_MIDI_HZ),
+        min_f * max_freq_factor,
         scale_amp,
         scale_dur,
         num_cps,
