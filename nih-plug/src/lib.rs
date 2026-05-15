@@ -1,14 +1,12 @@
 mod editor;
 mod thorgend_params;
 use nih_plug::prelude::*;
-use nih_plug_egui::EguiState;
 use std::sync::Arc;
 use thorgend_dsp::{Lfo, Notes, Voices, AMP_DIST, A_AMP, DUR_DIST, A_DUR};
 use thorgend_params::ThorgendParams;
 
 pub struct Thorgend {
   params: Arc<ThorgendParams>,
-  egui_state: Arc<EguiState>,
   sample_rate: f32,
   voices: Voices,
   notes: Notes,
@@ -19,7 +17,6 @@ impl Default for Thorgend {
   fn default() -> Self {
     Self {
       params: Arc::new(ThorgendParams::default()),
-      egui_state: EguiState::from_size(400, 600),
       sample_rate: 44100.0,
       voices: Voices::new(44100.0),
       notes: Notes::new(),
@@ -78,7 +75,7 @@ impl Plugin for Thorgend {
   }
 
   fn editor(&mut self, _async_executor: AsyncExecutor<Self>) -> Option<Box<dyn Editor>> {
-    editor::create(self.params.clone(), self.egui_state.clone())
+    editor::create(self.params.clone(), self.params.editor_state.clone())
   }
 
   fn initialize(

@@ -1,10 +1,14 @@
 use nih_plug::prelude::*;
+use nih_plug_egui::EguiState;
 mod custom_formatters;
 use crate::thorgend_params::custom_formatters::{s2v_f32_ms_then_s, v2s_f32_ms_then_s};
 use nih_plug::formatters::{s2v_f32_gain_to_db, v2s_f32_gain_to_db, v2s_f32_rounded};
+use std::sync::Arc;
 
 #[derive(Params)]
 pub struct ThorgendParams {
+  #[persist = "editor-state"]
+  pub editor_state: Arc<EguiState>,
   #[id = "voices"]
   pub voices: IntParam,
 
@@ -49,6 +53,8 @@ fn freq_skew_factor() -> f32 {
 impl Default for ThorgendParams {
   fn default() -> Self {
     Self {
+      editor_state: EguiState::from_size(400, 600),
+
       num_cps: IntParam::new("Richness", 7, IntRange::Linear { min: 2, max: 18 }),
 
       noisespeed: FloatParam::new(
