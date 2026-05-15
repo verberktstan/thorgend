@@ -4,6 +4,16 @@ use std::sync::Arc;
 use thorgend_dsp::{Lfo, Notes, Voices, AMP_DIST, A_AMP, DUR_DIST, A_DUR};
 use thorgend_params::ThorgendParams;
 
+fn variousity_rate_to_noisespeed(t: f32) -> f32 {
+  let s = thorgend_params::freq_skew_factor();
+  0.01 + (20.0 - 0.01) * t.powf(s)
+}
+
+fn variousity_rate_to_lfo_sh_freq(t: f32) -> f32 {
+  let s = thorgend_params::freq_skew_factor();
+  2.0 + (200.0 - 2.0) * (1.0 - t).powf(s)
+}
+
 pub struct Thorgend {
   params: Arc<ThorgendParams>,
   sample_rate: f32,
@@ -101,13 +111,14 @@ impl Plugin for Thorgend {
       let normalized = ((num_cps as f32 - 2.0) / 16.0).clamp(0.0, 1.0);
       2.0_f32.powf(1.0 + normalized * 4.0)
     };
-    let noisespeed = self.params.noisespeed.value();
+    let variousity_rate = self.params.variousity_rate.value();
+    let noisespeed = variousity_rate_to_noisespeed(variousity_rate);
+    let lfo_sh_freq = variousity_rate_to_lfo_sh_freq(variousity_rate);
     let noiseindex = util::db_to_gain(self.params.noiseindex.value() * 60.0 - 60.0);
     let noisyness = self.params.noisyness.value();
     let attack = self.params.attack.value();
     let decay = self.params.decay.value();
     let release = self.params.release.value();
-    let lfo_sh_freq = self.params.lfo_sh_freq.value();
     let lfo_drive = util::db_to_gain(self.params.dichotomization.value());
     self
       .notes
