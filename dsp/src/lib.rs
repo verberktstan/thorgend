@@ -73,7 +73,7 @@ impl Voices {
       }
       let envelope = adsr.process(note, attack, decay, sustain, release);
       let freq = adsr.get_freq();
-      let min_f = pitch_drift_compensation::compensated_min_freq(freq, scale_dur, dur_dist, a_dur);
+      let min_f = pitch_drift_compensation::compensated_min_freq(freq, scale_dur, max_freq_factor, dur_dist, a_dur);
       let output = oscillator.process(
         amp_dist,
         dur_dist,
