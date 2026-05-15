@@ -1,7 +1,7 @@
 mod thorgend_params;
 use nih_plug::prelude::*;
 use std::sync::Arc;
-use thorgend_dsp::{Lfo, Notes, SampleAndHold, Voices, AMP_DIST, A_AMP, DUR_DIST, A_DUR};
+use thorgend_dsp::{Lfo, Notes, Voices, AMP_DIST, A_AMP, DUR_DIST, A_DUR};
 use thorgend_params::ThorgendParams;
 
 pub struct Thorgend {
@@ -10,7 +10,6 @@ pub struct Thorgend {
   voices: Voices,
   notes: Notes,
   lfo2: Lfo,
-  lfo2_sh: SampleAndHold,
 }
 
 impl Default for Thorgend {
@@ -21,7 +20,6 @@ impl Default for Thorgend {
       voices: Voices::new(44100.0),
       notes: Notes::new(),
       lfo2: Lfo::new(44100.0),
-      lfo2_sh: SampleAndHold::new(44100.0),
     }
   }
 }
@@ -84,7 +82,6 @@ impl Plugin for Thorgend {
     self.sample_rate = buffer_config.sample_rate;
     self.voices = Voices::new(buffer_config.sample_rate);
     self.lfo2 = Lfo::new(buffer_config.sample_rate);
-    self.lfo2_sh = SampleAndHold::new(buffer_config.sample_rate);
 
     true
   }
@@ -123,18 +120,18 @@ impl Plugin for Thorgend {
       let output_gain = self.params.output_gain.smoothed.next();
 
       self.lfo2.advance(noisespeed, 0.0);
-      let lfo2_out = self.lfo2_sh.process(&self.lfo2, lfo_sh_freq, lfo_drive) * noiseindex + noisyness;
-      let effective_scale_amp = (0.5_f32 + lfo2_out).clamp(0.0, 1.0);
-      let effective_scale_dur = (0.5_f32 + lfo2_out).clamp(0.0, 1.0);
       let voices_out = self.voices.process(
         AMP_DIST,
         DUR_DIST,
         A_AMP,
         A_DUR,
-        effective_scale_amp,
-        effective_scale_dur,
         num_cps,
         max_freq_factor,
+        &self.lfo2,
+        lfo_sh_freq,
+        lfo_drive,
+        noiseindex,
+        noisyness,
         attack,
         decay,
         sustain,
